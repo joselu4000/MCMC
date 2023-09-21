@@ -1,6 +1,6 @@
 #### MCMC Poisson ####
 
-MCMC_Poisson <- function(data, n, Graph, nombre_opcional = NULL){
+MCMC_Poisson <- function(data, n, Graph, optional_name = NULL){
   memory <- list()
   
   # Función para calcular la probabilidad logarítmica de los datos dado un valor de lambda
@@ -66,8 +66,8 @@ MCMC_Poisson <- function(data, n, Graph, nombre_opcional = NULL){
   if (Graph == TRUE){
     #
     title <- "Comparación Poisson inicial/estimada"
-    if (!is.null(nombre_opcional)) {
-      title <- paste("Comparación Poisson inicial/estimada (",nombre_opcional,")")
+    if (!is.null(optional_name)) {
+      title <- paste("Comparación Poisson inicial/estimada (",optional_name,")")
     }
     #
   plot(x, sort(data), type = "b", pch = 19, col = 1, 
@@ -90,3 +90,11 @@ MCMC_Poisson <- function(data, n, Graph, nombre_opcional = NULL){
   memory[['poisson_estimada']] <- poisson_estimated
   return (memory)
 }
+      
+
+
+
+
+
+
+

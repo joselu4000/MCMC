@@ -1,0 +1,10 @@
+Title and Description: "Predefined R Functions for MCMC of Known Distributions."
+
+Usage Instructions: "It is freely available for use. For any issues or questions, please feel free to contact me."
+
+Usage Examples: "To generate a Poisson distribution, use the following example: 
+poi_MCMC_DC <- MCMC_Poisson(data, n = 1000, Graph = TRUE, optional_name = 'Disassembly and Cutting'). 
+
+Here, 'n' represents the number of iterations, 'Graph' is the choice to obtain graphs, and the last input is the optional title for the graphs."
+
+Project Status: "In progress."

@@ -1,0 +1,92 @@
+#### MCMC Poisson ####
+
+MCMC_Poisson <- function(data, n, Graph, nombre_opcional = NULL){
+  memory <- list()
+  
+  # Función para calcular la probabilidad logarítmica de los datos dado un valor de lambda
+  log_likelihood <- function(data, lambda) {
+    sum(data * log(lambda) - lambda - log(factorial(data)))
+  }
+  
+  # Función para ejecutar el algoritmo MCMC
+  mcmc_poisson <- function(data, n_iterations, initial_lambda, proposal_std) {
+    lambda_samples <- numeric(n_iterations)
+    current_lambda <- initial_lambda
+    for (i in 1:n_iterations) {
+      # Propuesta de un nuevo valor de lambda usando una distribución normal
+      new_lambda <- rnorm(1, current_lambda, proposal_std)
+      
+      # Calcula la probabilidad logarítmica de los datos para los valores actuales y propuestos de lambda
+      log_likelihood_current <- log_likelihood(data, current_lambda)
+      log_likelihood_new <- log_likelihood(data, new_lambda)
+      
+      # Calcula la razón de aceptación
+      acceptance_ratio <- exp(log_likelihood_new - log_likelihood_current)
+      
+      # Acepta o rechaza la nueva muestra
+      if (runif(1) < acceptance_ratio) {
+        current_lambda <- new_lambda
+      }
+      
+      lambda_samples[i] <- current_lambda
+    }
+    
+    return(lambda_samples)
+  }
+  
+  # Hiperparámetros del algoritmo MCMC
+  n_iterations <- n
+  initial_lambda <- mean(data)  # Valor inicial razonable para lambda
+  proposal_std <- 0.1  # Desviación estándar de la distribución de propuesta reducida
+  
+  # Ejecuta el algoritmo MCMC
+  samples <- mcmc_poisson(data, n_iterations, initial_lambda, proposal_std)
+  
+  if (Graph == TRUE){
+  # Grafica el histograma de las muestras
+  hist(samples, breaks = 50, prob = TRUE, main = 'Distribución de MCMC para lambda',
+       xlab = 'Valor de lambda', ylab = 'Densidad')
+  }
+  ####----------Estimacion y graficas plot-------------######
+  
+  # Valores iniciales y estimados de lambda
+  initial_lambda <- mean(data)  # Valor inicial
+  estimated_lambda <- mean(samples)  # Valor estimado
+  
+  # Rango de valores para x
+  x <- 1:length(data)
+  
+  # Calcula las distribuciones de Poisson para el valor inicial y estimado de lambda
+  poisson_initial <- rpois(length(data), lambda = initial_lambda)
+  poisson_estimated <- rpois(length(data), lambda = estimated_lambda)
+  
+  
+  
+  # Crea la gráfica
+  if (Graph == TRUE){
+    #
+    title <- "Comparación Poisson inicial/estimada"
+    if (!is.null(nombre_opcional)) {
+      title <- paste("Comparación Poisson inicial/estimada (",nombre_opcional,")")
+    }
+    #
+  plot(x, sort(data), type = "b", pch = 19, col = 1, 
+       ylim = c(0, max(data, poisson_initial, poisson_estimated)),
+       main = title,
+       xlab = "Ordenacion espacio", ylab = "Valor")
+  lines(x, sort(poisson_initial), type = "b", pch = 17, col = 2)
+  lines(x, sort(poisson_estimated), type = "b", pch = 17, col = 3)
+  
+  # Leyendas
+  legend("topleft", legend = c("Datos", "Poisson Inicial", "Poisson Estimado"),
+                                col = c(1:3), pch = c(19,17,17), lty = 1, lwd = 2)
+  }
+  warning('Estan ejecutandose valores aleatorios, conviene recargar para obtener resultados mas ajustados')
+  
+  #### Memoria ####
+  memory[['lambda_inicial']] <- initial_lambda
+  memory[['poisson_inicial']] <- poisson_initial
+  memory[['lambda_estimado']] <- estimated_lambda
+  memory[['poisson_estimada']] <- poisson_estimated
+  return (memory)
+}
